@@ -38,7 +38,6 @@ if (isset($_POST['submit'])) {
             }
         }
         if (empty($_SESSION['errors'])) {
-
             $user->insert();
             header('Location: login.php');
             exit;

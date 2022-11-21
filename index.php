@@ -1,11 +1,9 @@
 <?php
-session_start();
-if (!$_SESSION['user']) {
-    header('Location: login.php');
-}
+require_once 'partials/_start_session.php';
+require_once 'partials/_check_is_not_logged.php';
+require_once 'models/Task.php';
 
-
-require_once "connec.php";
+require_once 'models/User.php';
 
 
 
@@ -16,11 +14,10 @@ $message = '<div> Veuillez ajouter une tache SVP.</div>';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete']) && isset($_POST['supp'])) {
 
-    $sql = "DELETE FROM task WHERE id=:id";
-    $statement = $pdo->prepare($sql);
+    $delete = Task::deleteTask($id);
 
-    foreach ($_POST['supp'] as $id) {
-        $statement->execute(['id' => $id]);
+    foreach ($_POST['supp'] as $this->id) {
+        $stmt2->execute(['id' => $this->id]);
     }
 }
 
@@ -28,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete']) && isset($_P
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['is_done']) && isset($_POST['supp'])) {
 
-    $sql = "UPDATE TASK SET is_done = 1 WHERE id=:id";
-    $statement = $pdo->prepare($sql);
+
+    $statement = $pdo->prepare("UPDATE TASK SET is_done = 1 WHERE id=:id");
 
     foreach ($_POST['supp'] as $id) {
         $statement->execute(['id' => $id]);
@@ -39,10 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['is_done']) && isset($_
 
 // affichage des task
 
-$id_user = $_SESSION["user"]["id"];
-$sql = "SELECT * FROM task WHERE id_user=$id_user";
-$statement = $pdo->prepare($sql);
-$statement->execute();
-$tasks = $statement->fetchAll(PDO::FETCH_OBJ);
+$tasks = Task::displayTask();
+
+
+
+
+
+
+
 
 require_once 'views/index.php';

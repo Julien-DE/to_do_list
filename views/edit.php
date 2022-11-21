@@ -1,7 +1,5 @@
-<?php require_once '_partials/header.php'; ?>
-
-<body>
-
+<?php ob_start() ?>
+<div class="container">
     <header class="container d-grid gap-3 mt-5">
         <div class="mb-3 mx-auto">
             <h1> Modification d'une tâche</h1>
@@ -25,4 +23,8 @@
             <a href="index.php" class="btn btn-primary mb-3 mx-auto">Retourner au menu</a>
         </div>
     </form>
-    <?php require_once '_partials/footer.php';
+
+    <?php
+    $content = ob_get_clean();
+    include 'layout.php'
+    ?>

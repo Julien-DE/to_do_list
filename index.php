@@ -4,32 +4,8 @@ if (!$_SESSION['user']) {
     header('Location: login.php');
 }
 
-var_dump($_SESSION['user']['id']);
 
 require_once "connec.php";
-var_dump($_SESSION['user']['id']);
-
-// trier les éléments par date  !! NE MARCHE PAS !!!
-
-// $order_request = null;
-// $id_user = $_SESSION['user']['id'];
-// var_dump($_SESSION['user']['id']);
-
-
-// if (isset($_GET['order']) && in_array($_GET['order'], ['ASC', 'DESC'])) {
-//     $order_request = 'ORDER BY `to_do_at` ' . $_GET['order'];
-//     var_dump($_SESSION["user"]["id"]);
-//     $id_user = $_SESSION['user']['id'];
-//     var_dump($order_request);
-
-//     $statement = $pdo->prepare("SELECT *
-//     FROM task  
-//          WHERE user_id=" . $_SESSION['user']['id'] . " " . $order_request . "");
-//     var_dump($statement);
-//     $statement->execute();
-//     $tasks = $statement->fetchAll(PDO::FETCH_OBJ);
-//     var_dump($tasks);
-// }
 
 
 

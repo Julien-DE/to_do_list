@@ -1,36 +1,40 @@
-<?php require_once '_partials/header.php'; ?>
+<?php ob_start() ?>
+<header class="container d-grid gap-3 mt-5">
+    <div class="mb-3 mx-auto">
+        <h1> Veuillez vous connecter pour accèder à To-Do List</h1>
+    </div>
+</header>
 
-<body>
-    <header class="container d-grid gap-3 mt-5">
-        <div class="mb-3 mx-auto">
-            <h1> Veuillez vous connecter pour accèder à To-Do List</h1>
+<div class="container">
+    <?php require_once 'partials/_errors.php' ?>
+    <!-- register form with email and password repeat -->
+    <form action="" method="post" id="register">
+        <!-- input for email -->
+        <div class="form-group">
+            <label for="email">Votre adresse email</label>
+            <input type="email" name="email" id="email" class="form-control">
         </div>
-    </header>
+        <!-- input for password -->
+        <div class="form-group">
+            <label for="password">Votre mot de passe</label>
+            <input type="password" name="password" id="password" class="form-control">
+        </div>
 
-    <form action="" method="POST">
-        <div class="container d-grid gap-3 mt-5 ">
-            <div class="mb-3 mx-auto">
-                <label for="email" class="form-label">Adresse email</label>
-                <input type="text" class="form-control" name="email">
-            </div>
-            <div class="mb-3 mx-auto">
-                <label for="password" class="form-label">Mot de passe</label>
-                <input type="password" class="form-control" name="password">
-            </div>
-            <?php if (isset($_SESSION["error"])) {
-                foreach ($_SESSION["error"] as $message) { ?>
-                    <div class="text-danger mb-3 mx-auto"> <?= $message ?> </div>
-            <?php
-                }
-                unset($_SESSION["error"]);
-            } ?>
-            <input type="submit" class="btn btn-primary mb-3 mx-auto" name="login" value="Se connecter">
+        <!-- input for Submit -->
+        <div class="form-group">
+            <input type="submit" name="submit" value="Se connecter" class="btn btn-primary">
         </div>
     </form>
+</div>
 
-    <div class="container d-grid gap-3 mt-5">
-        <p class="mb-3 mx-auto"> Si vous n'avez pas encore de compte, vous pouvez en créer un maintenant.</p>
-        <a class="btn btn-primary mb-3 mx-auto" role="button" aria-disabled="true" href="register.php">Créer un compte</a>
-    </div>
+<div class="container d-grid gap-3 mt-5">
+    <p class="mb-3 mx-auto"> Si vous n'avez pas encore de compte, vous pouvez en créer un maintenant.</p>
+    <a class="btn btn-primary mb-3 mx-auto" role="button" aria-disabled="true" href="register.php">Créer un compte</a>
+</div>
 
-    <?php require_once '_partials/footer.php'; ?>
+<?php
+
+$content = ob_get_clean();
+include 'layout.php'
+
+?>

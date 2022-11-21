@@ -1,41 +1,64 @@
-<?php require_once '_partials/header.php'; ?>
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <title>Creation de votre compte</title>
-</head>
-
-<body>
-    <header class="container d-grid gap-3 mt-5">
-        <div class="mb-3 mx-auto">
-            <h1> Creation de votre compte</h1>
+<?php ob_start() ?>
+<div class="container">
+    <?php require_once 'partials/_errors.php' ?>
+    <!-- register form with email and password repeat -->
+    <form action="register.php" method="post" id="register">
+        <!-- input for email -->
+        <div class="form-group">
+            <label for="email">Votre adresse email</label>
+            <input type="email" name="email" id="email" class="form-control">
         </div>
-    </header>
-    <form action="" method="post">
-        <div class="container d-grid gap-3 mt-5">
-            <div class="mb-3 mx-auto">
-                <label for="name">Nom</label>
-                <input type="name" class="form-control" name="name" id="name" required>
-            </div>
-            <div class="mb-3 mx-auto">
-                <label for="email" class="form-label">Adresse email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3 mx-auto">
-                <label for="password" class="form-label">Mot de passe</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <input type="submit" class="btn btn-primary mb-3 mx-auto" name="register" Value="Créer votre compte">
-            <?php
+        <!-- input for password -->
+        <div class="form-group">
+            <label for="password">Votre mot de passe</label>
+            <input type="password" name="password" id="password" class="form-control">
+        </div>
+        <!-- input for password repeat -->
+        <div class="form-group">
+            <label for="password_repeat">Veuillez répéter votre mot de passe</label>
+            <input type="password" name="password_repeat" id="password_repeat" class="form-control">
+        </div>
 
-            if (isset($message)) {
-                echo '<div class="text-danger mb-3 mx-auto">' . $message . '</div>';
-            }
-            ?>
+        <!-- input for Submit -->
+        <div class="form-group">
+            <input type="submit" name="submit" value="Register" class="btn btn-primary">
         </div>
     </form>
+</div>
 
-    <? require_once '_partials/footer.php'; ?>
+<script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
+
+<script>
+    const validation = new window.JustValidate('#register');
+    validation
+        .addField('#email', [{
+                rule: 'required',
+                errorMessage: 'Email is required',
+            },
+            {
+                rule: 'email',
+                errorMessage: 'Email is invalid!',
+            },
+        ])
+        .addField('#password', [{
+            rule: 'strongPassword',
+        }, ])
+        .addField('#password_repeat', [{
+            validator: (value, fields) => {
+                if (fields['#password'] && fields['#password'].elem) {
+                    const repeatPasswordValue = fields['#password'].elem.value;
+
+                    return value === repeatPasswordValue;
+                }
+
+                return true;
+            },
+            errorMessage: 'Passwords should be the same',
+        }, ]);
+</script>
+
+<?php
+$content = ob_get_clean();
+$title = "Register Page";
+include 'layout.php'
+?>

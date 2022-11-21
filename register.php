@@ -1,65 +1,49 @@
 <?php
 
-session_start();
-if (isset($_SESSION["user"])) {
-    header("Location: index.php");
-    exit;
-}
+require_once 'partials/_check_is_not_logged.php';
+require_once 'models/User.php';
 
-// require_once '_partials/header.php';
+if (isset($_POST['submit'])) {
 
-if (!empty($_POST)) {
-    if (
-        isset($_POST['name'], $_POST['email'], $_POST['password'])
-        && !empty($_POST['name']) && !empty($_POST['email']) && !empty($_POST['password'])
-    ) {
-        //Récupération des données sécurisées
-        $userName = strip_tags($_POST["name"]);
-        $_SESSION["error"] = [];
-        if (strlen($userName) < 3) {
-            $_SESSION["error"][] = "Le nom est trop court";
+    require_once 'partials/_start_session.php';
+    // vérification de la présence des datas dans tous les champs
+    if (empty($_POST['email']) || empty($_POST['password']) || empty($_POST['password_repeat'])) {
+        $_SESSION['errors'][] = "veuillez remplir tous les champs";
+    } else {
+
+        $secured_data = [
+            'email' => htmlspecialchars($_POST['email']),
+            'password' => htmlspecialchars($_POST['password']),
+            'password_repeat' => htmlspecialchars($_POST['password_repeat'])
+        ];
+        //      1- vérifier la structure de l'adresse mail
+        try {
+            $user = new User();
+            $user->setEmail($secured_data['email']);
+            $user->setPassword($secured_data['password']);
+        } catch (Exception $e) {
+            ($e->getMessage());
+            die;
+            $_SESSION['errors'] = $e->getMessage();
         }
-        if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-            $_SESSION["error"][] = "L'adresse email est incorrecte";
-        }
-        //Si il y a une erreur enregistrée dans la session, on arrête
-        if ($_SESSION["error"] === []) {
-            //On va hasher le mot de passe    
-            $pass = password_hash($_POST["password"], PASSWORD_ARGON2ID);
-            // On enregistre dans la BDD
-            require_once "connec.php";
-            //Vérifier si le mail est déjà dans la BD 
-            $stmt = $pdo->prepare("SELECT * FROM `user` WHERE `email` = :email");
-            $stmt->execute(array(
-                'email' => $_POST["email"]
-            ));
-            $count = $stmt->rowCount();
-            if ($count > 0) {
-                $_SESSION["error"][] = "Ce mail est déjà enregistré";
-                $user = $stmt->fetch();
-            } else {
-                $stmt = $pdo->prepare("INSERT INTO `user` (`name`, `email`, `password`) VALUES (:name, :email, :password)");
-                $stmt->execute([
-                    'name' => $userName,
-                    'email' => $_POST['email'],
-                    'password' => $pass
-                ]);
-                unset($pdo);
-                header('Location: login.php');
+        if (empty($_SESSION['errors'])) {
+            if ($user->isExisted()) {
+                $_SESSION['errors'][] = "cette adresse mail existe déjà";
             }
         }
-    } else {
-        $_SESSION["error"] = "Le formulaire est incomplet";
+        if (empty($_SESSION['errors'])) {
+
+            if ($secured_data['password'] != $secured_data['password_repeat']) {
+                $_SESSION['errors'][] = "Les deux mots de passe ne correspondent pas";
+            }
+        }
+        if (empty($_SESSION['errors'])) {
+
+            $user->insert();
+            header('Location: login.php');
+            exit;
+        }
     }
 }
 
-?>
-
-
-
-<!DOCTYPE html>
-<html lang="fr">
-
-
-
-<?php require_once 'views/register.php'; ?>
+require_once 'views/register.php';
